@@ -41,17 +41,19 @@ import (
 func main() {
 	o := orbit.NewPlanet()
 
-	o.Get("/", idHandler)
+	o.Get("/", func(b orbit.Bits) error {
+		return b.Text(200, "root")
+	})
 
-	o.Get("/{id}", )
+	o.Get("/{id}", idHandler)
 
 	o.Launch("127.0.0.1:9000")
 }
 
 func idHandler(b orbit.Bits) error {
-		id := orbit.URLParam(b.Request(), "id")
+  id := orbit.URLParam(b.Request(), "id")
 
-		return b.Text(200, id)
+  return b.Text(200, id)
 }
 ```
 
