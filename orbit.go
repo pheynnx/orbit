@@ -17,7 +17,7 @@ type Handler interface {
 type HandlerFunc func(b Bits) error
 
 func (f HandlerFunc) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	b := &bits{response: w, request: r, name: "Peter"}
+	b := &bits{response: w, request: r}
 	f(b)
 }
 
@@ -77,7 +77,7 @@ func (o *Orbit) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // Use appends a middleware handler to the Orbit middleware stack.
 func (o *Orbit) Use(middlewares ...func(Handler) Handler) {
 	if o.handler != nil {
-		panic("chi: all middlewares must be defined before routes on a mux")
+		panic("orbit: all middlewares must be defined before routes on a mux")
 	}
 	o.middlewares = append(o.middlewares, middlewares...)
 }
@@ -99,7 +99,7 @@ func (o *Orbit) HandleFunc(pattern string, handlerFn HandlerFunc) {
 func (o *Orbit) Method(method, pattern string, handler Handler) {
 	m, ok := methodMap[strings.ToUpper(method)]
 	if !ok {
-		panic(fmt.Sprintf("chi: '%s' http method is not supported.", method))
+		panic(fmt.Sprintf("orbit: '%s' http method is not supported.", method))
 	}
 	o.handle(m, pattern, handler)
 }
@@ -242,7 +242,7 @@ func (o *Orbit) Group(fn func(r Router)) Router {
 // call to Mount.
 func (o *Orbit) Route(pattern string, fn func(r Router)) Router {
 	if fn == nil {
-		panic(fmt.Sprintf("chi: attempting to Route() a nil subrouter on '%s'", pattern))
+		panic(fmt.Sprintf("orbit: attempting to Route() a nil subrouter on '%s'", pattern))
 	}
 	subRouter := NewPlanet()
 	fn(subRouter)
@@ -250,20 +250,20 @@ func (o *Orbit) Route(pattern string, fn func(r Router)) Router {
 	return subRouter
 }
 
-// Mount attaches another http.Handler or chi Router as a subrouter along a routing
+// Mount attaches another http.Handler or orbit Router as a subrouter along a routing
 // path. It's very useful to split up a large API as many independent routers and
 // compose them as a single service using Mount. See _examples/.
 //
 // Note that Mount() simply sets a wildcard along the `pattern` that will continue
-// routing at the `handler`, which in most cases is another chi.Router. As a result,
+// routing at the `handler`, which in most cases is another orbit.Router. As a result,
 // if you define two Mount() routes on the exact same pattern the mount will panic.
 func (o *Orbit) Mount(pattern string, handler Handler) {
 	if handler == nil {
-		panic(fmt.Sprintf("chi: attempting to Mount() a nil handler on '%s'", pattern))
+		panic(fmt.Sprintf("orbit: attempting to Mount() a nil handler on '%s'", pattern))
 	}
 
 	if o.tree.findPattern(pattern+"*") || o.tree.findPattern(pattern+"/*") {
-		panic(fmt.Sprintf("chi: attempting to Mount() a handler on an existing path, '%s'", pattern))
+		panic(fmt.Sprintf("orbit: attempting to Mount() a handler on an existing path, '%s'", pattern))
 	}
 
 	subr, ok := handler.(*Orbit)
@@ -362,7 +362,7 @@ func (o *Orbit) MethodNotAllowedHandler(methodsAllowed ...methodTyp) HandlerFunc
 // and routing pattern.
 func (o *Orbit) handle(method methodTyp, pattern string, handler http.Handler) *node {
 	if len(pattern) == 0 || pattern[0] != '/' {
-		panic(fmt.Sprintf("chi: routing pattern must begin with '/' in '%s'", pattern))
+		panic(fmt.Sprintf("orbit: routing pattern must begin with '/' in '%s'", pattern))
 	}
 
 	if !o.inline && o.handler == nil {

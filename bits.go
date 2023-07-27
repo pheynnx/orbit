@@ -29,14 +29,14 @@ func (b *bits) Text(code int, s string) error {
 	return err
 }
 
-// // TODO
-// func (b *bits) Html(code int, html string) error {
-// 	b.response.Header().Set("Content-Type", "text/html")
-// 	b.response.WriteHeader(code)
-// 	return nil
-// }
+func (b *bits) Html(code int, html string) error {
+	b.response.Header().Set("Content-Type", "text/html")
+	b.response.WriteHeader(code)
+	_, err := b.response.Write([]byte(html))
+	return err
+}
 
-// // TODO
+// TODO
 // func (b *bits) Json(code int, json any) error {
 // 	b.response.Header().Set("Content-Type", "application/json")
 // 	b.response.WriteHeader(code)
