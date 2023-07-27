@@ -21,7 +21,7 @@ This library is for my personal usage and knowledge
 
 #### Is this production ready?
 
-No :D - this may never be production ready
+Sure :D - routing by chi and a couple extra helper methods; you can always manually write out your handler returns with the http.ResponseWriter and *http.Request structs
 
 ### Installation
 
